@@ -37,7 +37,7 @@ class TrackerZilla.MainWindow : Gtk.Window {
         var scrolled = new Gtk.ScrolledWindow (null, null);
         this.add (scrolled);
         scrolled.add (view);
-        this.set_default_size (640, 480);
+        this.set_default_size (800, 600);
 
         this.destroy.connect ( () => { Gtk.main_quit (); } );
 
@@ -62,16 +62,16 @@ class TrackerZilla.MainWindow : Gtk.Window {
 
     private async void init () {
         try {
-        var cursor = yield connection.query_async (TYPE_QUERY);
-        var simple_type = new Regex ("^http://www.w3.org/2001/XMLSchema#");
+            var cursor = yield connection.query_async (TYPE_QUERY);
+            var simple_type = new Regex ("^http://www.w3.org/2001/XMLSchema#");
 
-        while (yield cursor.next_async ()) {
-            if (simple_type.match (cursor.get_string (1))) {
-                simple_properties.add (cursor.get_string (0));
+            while (yield cursor.next_async ()) {
+                if (simple_type.match (cursor.get_string (1))) {
+                    simple_properties.add (cursor.get_string (0));
+                }
             }
-        }
 
-        this.query ("http://www.w3.org/2000/01/rdf-schema#Resource");
+            this.query ("http://www.w3.org/2000/01/rdf-schema#Resource");
         } catch (Error error) {
             warning ("Failed to initialize ourselves: %s", error.message);
         }
