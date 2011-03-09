@@ -81,9 +81,15 @@ class TrackerZilla.MainWindow : Gtk.Window {
                                   NetworkRequest request,
                                   WebNavigationAction action,
                                   WebPolicyDecision decision) {
+        bool history = true;
+
+        if (action.get_reason () != WebKit.WebNavigationReason.LINK_CLICKED) {
+            history = false;
+        }
+
         if (request.uri.has_prefix ("tracker://")) {
             string resource = request.uri.slice (11, -1);
-            this.query (resource);
+            this.query (resource, history);
 
             return true;
         }
@@ -91,17 +97,20 @@ class TrackerZilla.MainWindow : Gtk.Window {
         return false;
     }
 
-    public async void query (string uri) {
+    public async void query (string uri, bool history = true) {
         yield this.linked.query (uri);
         yield this.linking.query (uri);
         var content = "<h2>%s</h2>%s%s".printf (uri,
                                                 linked.render (),
                                                 linking.render ());
         this.view.load_html_string (content, "");
-        var item = new WebHistoryItem.with_data
+        if (history) {
+            var item = new WebHistoryItem.with_data
                                         (AbstractInfo.generate_uri (uri),
                                          uri);
-        this.view.get_back_forward_list ().add_item (item);
+
+            this.view.get_back_forward_list ().add_item (item);
+        }
     }
 }
 
