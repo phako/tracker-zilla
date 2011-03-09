@@ -29,7 +29,7 @@ class TrackerZilla.MainWindow : Gtk.Window {
     private Sparql.Connection connection;
     private Gee.HashSet<string> simple_properties;
 
-    public MainWindow () {
+    public MainWindow (string initial_uri) {
         Object (type: Gtk.WindowType.TOPLEVEL);
 
         // init UI
@@ -48,7 +48,7 @@ class TrackerZilla.MainWindow : Gtk.Window {
             this.linking = new LinkingInfo (connection, simple_properties);
 
             Idle.add (() => {
-                    this.init ();
+                    this.init (initial_uri);
 
                     return false;
                     });
@@ -60,7 +60,7 @@ class TrackerZilla.MainWindow : Gtk.Window {
         }
     }
 
-    private async void init () {
+    private async void init (string initial_uri) {
         try {
             var cursor = yield connection.query_async (TYPE_QUERY);
             var simple_type = new Regex ("^http://www.w3.org/2001/XMLSchema#");
@@ -71,7 +71,7 @@ class TrackerZilla.MainWindow : Gtk.Window {
                 }
             }
 
-            this.query ("http://www.w3.org/2000/01/rdf-schema#Resource");
+            this.query (initial_uri);
         } catch (Error error) {
             warning ("Failed to initialize ourselves: %s", error.message);
         }

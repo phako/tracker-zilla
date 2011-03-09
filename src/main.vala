@@ -19,8 +19,13 @@
 
 int main(string[] args) {
     Gtk.init (ref args);
+    string resource = "http://www.w3.org/2000/01/rdf-schema#Resource";
 
-    var m = new TrackerZilla.MainWindow ();
+    if (args.length > 1) {
+        resource = args[1];
+    }
+
+    var m = new TrackerZilla.MainWindow (resource);
     m.show_all ();
 
     Gtk.main ();
