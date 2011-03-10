@@ -1,6 +1,6 @@
 AC_PREREQ([2.64])
 AC_INIT([TrackerZilla],
-        [0.1],
+        [0.1.1],
         [http://jensge.org],
         [trackerzilla],
         [http://jensge.org])
