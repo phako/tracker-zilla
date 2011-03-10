@@ -48,10 +48,10 @@ class TrackerZilla.MainWindow : Gtk.Window {
             this.linking = new LinkingInfo (connection, simple_properties);
 
             Idle.add (() => {
-                    this.init (initial_uri);
+                this.init (initial_uri);
 
-                    return false;
-                    });
+                return false;
+            });
 
             this.view.navigation_policy_decision_requested.connect
                                         (this.on_link_clicked);
