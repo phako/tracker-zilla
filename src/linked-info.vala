@@ -22,9 +22,10 @@ using Tracker;
 internal class TrackerZilla.LinkedInfo : AbstractInfo {
     private const string linked_template = "SELECT ?a ?b WHERE { <%s> ?a ?b . }";
 
-    public LinkedInfo (Sparql.Connection connection,
-                       Gee.Set<string>   properties) {
-        base (connection, properties);
+    public LinkedInfo (Sparql.Connection   connection,
+                       Gee.Set<string>     properties,
+                       KnownPrefixReplacer shortener) {
+        base (connection, properties, shortener);
     }
 
     public override string render () {

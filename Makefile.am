@@ -7,7 +7,8 @@ src_trackerzilla_SOURCES= \
 	src/linked-info.vala \
 	src/linking-info.vala \
 	src/main.vala \
-	src/main-window.vala
+	src/main-window.vala \
+	src/prefix-registry.vala
 
 src_trackerzilla_VALAFLAGS=\
 	--vapidir $(abs_top_srcdir)/vapi \

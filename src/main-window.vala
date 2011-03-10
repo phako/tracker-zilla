@@ -28,6 +28,7 @@ class TrackerZilla.MainWindow : Gtk.Window {
     private AbstractInfo linking;
     private Sparql.Connection connection;
     private Gee.HashSet<string> simple_properties;
+    private KnownPrefixReplacer shortener;
 
     public MainWindow (string initial_uri) {
         Object (type: Gtk.WindowType.TOPLEVEL);
@@ -44,8 +45,13 @@ class TrackerZilla.MainWindow : Gtk.Window {
         try {
             this.connection = Sparql.Connection.get ();
             this.simple_properties = new Gee.HashSet<string> ();
-            this.linked = new LinkedInfo (connection, simple_properties);
-            this.linking = new LinkingInfo (connection, simple_properties);
+            this.shortener = new KnownPrefixReplacer (this.connection);
+            this.linked = new LinkedInfo (this.connection,
+                                          this.simple_properties,
+                                          this.shortener);
+            this.linking = new LinkingInfo (this.connection,
+                                            this.simple_properties,
+                                            this.shortener);
 
             Idle.add (() => {
                 this.init (initial_uri);
@@ -70,6 +76,8 @@ class TrackerZilla.MainWindow : Gtk.Window {
                     simple_properties.add (cursor.get_string (0));
                 }
             }
+
+            yield this.shortener.init ();
 
             this.query (initial_uri);
         } catch (Error error) {

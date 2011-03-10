@@ -25,16 +25,19 @@ internal abstract class TrackerZilla.AbstractInfo : Object {
     protected Sparql.Connection connection;
     protected TreeMultiMap<string,string> data;
     private   Gee.Set<string> properties;
+    private   KnownPrefixReplacer shortener;
 
     public static string generate_uri (string uri) {
         return "tracker://" + Uri.escape_string (uri, "", true);
     }
 
-    public AbstractInfo (Sparql.Connection connection,
-                         Gee.Set<string>   properties) {
+    public AbstractInfo (Sparql.Connection   connection,
+                         Gee.Set<string>     properties,
+                         KnownPrefixReplacer shortener) {
         this.connection = connection;
         this.properties = properties;
         this.data = new TreeMultiMap<string, string> ();
+        this.shortener = shortener;
     }
 
     public async void query (string urn) {
@@ -43,14 +46,17 @@ internal abstract class TrackerZilla.AbstractInfo : Object {
             var query = this.template ().printf (urn);
             var cursor = yield this.connection.query_async (query);
             while (yield cursor.next_async ()) {
-                unowned string value = cursor.get_string (1);
+                unowned string predicate = cursor.get_string (0);
+                var shortened_predicate = this.shortener.reduce (predicate);
+                unowned string object = cursor.get_string (1);
+                var shortened_object = this.shortener.reduce (object);
                 if (cursor.get_value_type (1) == Sparql.ValueType.URI ||
-                    !this.properties.contains (cursor.get_string (0))) {
-                    var link = LINK_TEMPLATE.printf (generate_uri (value),
-                                                     value);
-                    data[cursor.get_string (0)] = link;
+                    !this.properties.contains (predicate)) {
+                    var link = LINK_TEMPLATE.printf (generate_uri (object),
+                                                     shortened_object);
+                    data[shortened_predicate] = link;
                 } else {
-                    data[cursor.get_string (0)] = value;
+                    data[shortened_predicate] = object;
                 }
             }
         } catch (Error error) {
