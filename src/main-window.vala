@@ -30,15 +30,30 @@ class TrackerZilla.Main : Object {
     public Main (string initial_uri) {
         this.data_source = new DataSource ();
         this.builder = new Builder ();
-        this.builder.add_from_file (Config.UI_DIR + "/tracker-zilla.ui");
+
+        try {
+            this.builder.add_from_file (Config.UI_DIR + "/tracker-zilla.ui");
+        } catch (Error error) {
+            var dialog = new MessageDialog.with_markup
+                                        (null,
+                                         0,
+                                         MessageType.ERROR,
+                                         ButtonsType.CLOSE,
+                                         "<b>Failed to create user interface:</b>");
+            dialog.format_secondary_text (error.message);
+            dialog.run ();
+            dialog.destroy ();
+            Posix.exit (2);
+        }
+
         this.search_bar = new SearchBar (this.builder);
         var window = this.builder.get_object ("tz_main_window") as Window;
         window.add_accel_group (search_bar.get_accelerators ());
         // init UI
         this.view = new WebView ();
         this.view.show ();
-        var scrolled = this.builder.get_object ("tz_main_scrolled") as
-            ScrolledWindow;
+        var scrolled = this.builder.get_object ("tz_main_scrolled")
+                                        as ScrolledWindow;
         scrolled.add (view);
 
         window.destroy.connect ( () => { Gtk.main_quit (); } );
