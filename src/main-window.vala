@@ -82,16 +82,7 @@ class TrackerZilla.Main : Object {
             yield this.data_source.init_async ();
             this.query (initial_uri);
         } catch (Error error) {
-            var window = this.builder.get_object ("tz_main_window") as Window;
-            var dialog = new MessageDialog.with_markup
-                                        (window,
-                                         0,
-                                         MessageType.ERROR,
-                                         ButtonsType.CLOSE,
-                                         "<b>Error connecting to tracker:</b>");
-            dialog.format_secondary_text (error.message);
-            dialog.run ();
-            dialog.destroy ();
+            this.show_error ("Failed to connect to tracker", error);
             Gtk.main_quit ();
         }
     }
@@ -116,18 +107,40 @@ class TrackerZilla.Main : Object {
         return false;
     }
 
-    public async void query (string uri, bool history = true) {
-        yield this.data_source.query (uri);
-        var content = "<h2>%s</h2>%s".printf (uri,
-                                              this.data_source.render ());
-        this.view.load_html_string (content, "");
+    public async void query (string uri,
+                             bool history = true)
+                             throws Error {
+        try {
+            yield this.data_source.query (uri);
+            var content = "<h2>%s</h2>%s".printf (uri,
+                                                  this.data_source.render ());
+            this.view.load_html_string (content, "");
 
-        if (history) {
-            var link = AbstractInfo.generate_uri (uri);
-            var item = new WebHistoryItem.with_data (link, uri);
+            if (history) {
+                var link = AbstractInfo.generate_uri (uri);
+                var item = new WebHistoryItem.with_data (link, uri);
 
-            this.view.get_back_forward_list ().add_item (item);
+                this.view.get_back_forward_list ().add_item (item);
+            }
+        } catch (Error error) {
+            this.show_error ("Failed to query information from tracker",
+                             error);
+            Gtk.main_quit ();
         }
+    }
+
+    private void show_error (string primary, Error error) {
+        var window = this.builder.get_object ("tz_main_window") as Window;
+        var dialog = new MessageDialog.with_markup
+                                    (window,
+                                     0,
+                                     MessageType.ERROR,
+                                     ButtonsType.CLOSE,
+                                     "<b>%s:</b>",
+                                     primary);
+        dialog.format_secondary_text (error.message);
+        dialog.run ();
+        dialog.destroy ();
     }
 }
 

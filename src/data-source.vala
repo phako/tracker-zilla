@@ -59,7 +59,7 @@ internal class TrackerZilla.DataSource : Object, AsyncInitable {
         return true;
     }
 
-    public async void query (string uri) {
+    public async void query (string uri) throws Error {
         yield this.linked.query (uri);
         yield this.linking.query (uri);
     }

@@ -40,27 +40,23 @@ internal abstract class TrackerZilla.AbstractInfo : Object {
         this.shortener = shortener;
     }
 
-    public async void query (string urn) {
-        try {
-            this.data.clear ();
-            var query = this.template ().printf (urn);
-            var cursor = yield this.connection.query_async (query);
-            while (yield cursor.next_async ()) {
-                unowned string predicate = cursor.get_string (0);
-                var shortened_predicate = this.shortener.reduce (predicate);
-                unowned string object = cursor.get_string (1);
-                var shortened_object = this.shortener.reduce (object);
-                if (cursor.get_value_type (1) == Sparql.ValueType.URI ||
-                    !this.properties.contains (predicate)) {
-                    var link = LINK_TEMPLATE.printf (generate_uri (object),
-                                                     shortened_object);
-                    data[shortened_predicate] = link;
-                } else {
-                    data[shortened_predicate] = object;
-                }
+    public async void query (string urn) throws Error {
+        this.data.clear ();
+        var query = this.template ().printf (urn);
+        var cursor = yield this.connection.query_async (query);
+        while (yield cursor.next_async ()) {
+            unowned string predicate = cursor.get_string (0);
+            var shortened_predicate = this.shortener.reduce (predicate);
+            unowned string object = cursor.get_string (1);
+            var shortened_object = this.shortener.reduce (object);
+            if (cursor.get_value_type (1) == Sparql.ValueType.URI ||
+                !this.properties.contains (predicate)) {
+                var link = LINK_TEMPLATE.printf (generate_uri (object),
+                                                 shortened_object);
+                data[shortened_predicate] = link;
+            } else {
+                data[shortened_predicate] = object;
             }
-        } catch (Error error) {
-            warning ("Failed to query data: %s", error.message);
         }
     }
 
