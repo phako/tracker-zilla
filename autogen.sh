@@ -1,5 +1,5 @@
 #!/bin/sh
 
-mkdir m4
+mkdir -p m4
 autoreconf -if
 ./configure --enable-vala --enable-maintainer-mode $*
