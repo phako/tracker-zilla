@@ -22,18 +22,13 @@ using Tracker;
 using WebKit;
 
 class TrackerZilla.Main : Object {
-    private const string TYPE_QUERY =
-                 "SELECT ?p ?r WHERE { ?p a rdf:Property. ?p rdfs:range ?r }";
     private WebView view;
-    private AbstractInfo linked;
-    private AbstractInfo linking;
-    private Sparql.Connection connection;
-    private Gee.HashSet<string> simple_properties;
-    private KnownPrefixReplacer shortener;
     private Builder builder;
     private SearchBar search_bar;
+    private DataSource data_source;
 
     public Main (string initial_uri) {
+        this.data_source = new DataSource ();
         this.builder = new Builder ();
         this.builder.add_from_file (Config.UI_DIR + "/tracker-zilla.ui");
         this.search_bar = new SearchBar (this.builder);
@@ -55,28 +50,9 @@ class TrackerZilla.Main : Object {
                               true);
         });
 
-        try {
-            this.connection = Sparql.Connection.get ();
-            this.simple_properties = new Gee.HashSet<string> ();
-            this.shortener = new KnownPrefixReplacer (this.connection);
-            this.linked = new LinkedInfo (this.connection,
-                                          this.simple_properties,
-                                          this.shortener);
-            this.linking = new LinkingInfo (this.connection,
-                                            this.simple_properties,
-                                            this.shortener);
-
-            Idle.add (() => {
-                this.init (initial_uri);
-
-                return false;
-            });
-
-            this.view.navigation_policy_decision_requested.connect
+        this.view.navigation_policy_decision_requested.connect
                                         (this.on_link_clicked);
-        } catch (Error error) {
-            warning ("Could not connect to tracker: %s", error.message);
-        }
+        this.init (initial_uri);
     }
 
     public void run () {
@@ -86,22 +62,22 @@ class TrackerZilla.Main : Object {
         Gtk.main ();
     }
 
-    private async void init (string initial_uri) {
+    private async void init (string initial_uri) throws Error {
         try {
-            var cursor = yield connection.query_async (TYPE_QUERY);
-            var simple_type = new Regex ("^http://www.w3.org/2001/XMLSchema#");
-
-            while (yield cursor.next_async ()) {
-                if (simple_type.match (cursor.get_string (1))) {
-                    simple_properties.add (cursor.get_string (0));
-                }
-            }
-
-            yield this.shortener.init ();
-
+            yield this.data_source.init_async ();
             this.query (initial_uri);
         } catch (Error error) {
-            warning ("Failed to initialize ourselves: %s", error.message);
+            var window = this.builder.get_object ("tz_main_window") as Window;
+            var dialog = new MessageDialog.with_markup
+                                        (window,
+                                         0,
+                                         MessageType.ERROR,
+                                         ButtonsType.CLOSE,
+                                         "<b>Error connecting to tracker:</b>");
+            dialog.format_secondary_text (error.message);
+            dialog.run ();
+            dialog.destroy ();
+            Gtk.main_quit ();
         }
     }
 
@@ -126,16 +102,14 @@ class TrackerZilla.Main : Object {
     }
 
     public async void query (string uri, bool history = true) {
-        yield this.linked.query (uri);
-        yield this.linking.query (uri);
-        var content = "<h2>%s</h2>%s%s".printf (uri,
-                                                linked.render (),
-                                                linking.render ());
+        yield this.data_source.query (uri);
+        var content = "<h2>%s</h2>%s".printf (uri,
+                                              this.data_source.render ());
         this.view.load_html_string (content, "");
+
         if (history) {
-            var item = new WebHistoryItem.with_data
-                                        (AbstractInfo.generate_uri (uri),
-                                         uri);
+            var link = AbstractInfo.generate_uri (uri);
+            var item = new WebHistoryItem.with_data (link, uri);
 
             this.view.get_back_forward_list ().add_item (item);
         }

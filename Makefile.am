@@ -12,6 +12,7 @@ bin_PROGRAMS=src/trackerzilla
 
 src_trackerzilla_SOURCES= \
 	src/abstract-info.vala \
+	src/data-source.vala \
 	src/linked-info.vala \
 	src/linking-info.vala \
 	src/main.vala \
@@ -22,6 +23,7 @@ src_trackerzilla_SOURCES= \
 src_trackerzilla_VALAFLAGS=\
 	--vapidir $(abs_top_srcdir)/vapi \
 	--pkg config \
+	--pkg gio-2.0 \
 	--pkg gtk+-3.0 \
 	--pkg webkitgtk-3.0 \
 	--pkg gee-1.0 \
