@@ -117,7 +117,7 @@ class TrackerZilla.Main : Object {
             yield this.data_source.query (uri);
             var content = "<h2>%s</h2>%s".printf (uri,
                                                   this.data_source.render ());
-            this.view.load_html_string (content, "");
+            this.view.load_string (content, "text/html", "UTF-8", "");
 
             if (history) {
                 var link = AbstractInfo.generate_uri (uri);
