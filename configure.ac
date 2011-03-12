@@ -41,6 +41,12 @@ esac
 AC_SUBST([WEBKIT_PACKAGE])
 AC_SUBST([GTK_PACKAGE])
 
+AC_ARG_ENABLE([uninstalled],
+              AS_HELP_STRING([--enable-uninstalled],
+                             [Run the program from source tree]),,
+              enable_uninstalled=no)
+AM_CONDITIONAL(UNINSTALLED, [test "x$enable_uninstalled" = "xyes"])
+
 PKG_CHECK_MODULES(LIBGTK, $GTK_PACKAGE >= $GTK_REQUIRED)
 PKG_CHECK_MODULES(WEBKITGTK, $WEBKIT_PACKAGE >= $WEBKITGTK_REQUIRED)
 PKG_CHECK_MODULES(TRACKER_SPARQL, tracker-sparql-0.10 >= $TRACKER_SPARQL_REQUIRED)

@@ -17,10 +17,11 @@
 // 02110-1301, USA.
 //
 
+using Gtk;
 using Tracker;
 using WebKit;
 
-class TrackerZilla.MainWindow : Gtk.Window {
+class TrackerZilla.Main : Object {
     private const string TYPE_QUERY =
                  "SELECT ?p ?r WHERE { ?p a rdf:Property. ?p rdfs:range ?r }";
     private WebView view;
@@ -29,18 +30,29 @@ class TrackerZilla.MainWindow : Gtk.Window {
     private Sparql.Connection connection;
     private Gee.HashSet<string> simple_properties;
     private KnownPrefixReplacer shortener;
+    private Builder builder;
+    private SearchBar search_bar;
 
-    public MainWindow (string initial_uri) {
-        Object (type: Gtk.WindowType.TOPLEVEL);
-
+    public Main (string initial_uri) {
+        this.builder = new Builder ();
+        this.builder.add_from_file (Config.UI_DIR + "/tracker-zilla.ui");
+        this.search_bar = new SearchBar (this.builder);
+        var window = this.builder.get_object ("tz_main_window") as Window;
         // init UI
         this.view = new WebView ();
-        var scrolled = new Gtk.ScrolledWindow (null, null);
-        this.add (scrolled);
+        this.view.show ();
+        var scrolled = this.builder.get_object ("tz_main_scrolled") as
+            ScrolledWindow;
         scrolled.add (view);
-        this.set_default_size (800, 600);
 
-        this.destroy.connect ( () => { Gtk.main_quit (); } );
+        window.destroy.connect ( () => { Gtk.main_quit (); } );
+
+        this.search_bar.find.connect ( (text, direction) => {
+            view.search_text (text,
+                              false,
+                              direction == SearchDirection.FORWARD,
+                              true);
+        });
 
         try {
             this.connection = Sparql.Connection.get ();
@@ -64,6 +76,13 @@ class TrackerZilla.MainWindow : Gtk.Window {
         } catch (Error error) {
             warning ("Could not connect to tracker: %s", error.message);
         }
+    }
+
+    public void run () {
+        var window = this.builder.get_object ("tz_main_window") as Window;
+        window.show ();
+
+        Gtk.main ();
     }
 
     private async void init (string initial_uri) {

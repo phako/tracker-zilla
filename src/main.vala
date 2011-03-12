@@ -25,10 +25,8 @@ int main(string[] args) {
         resource = args[1];
     }
 
-    var m = new TrackerZilla.MainWindow (resource);
-    m.show_all ();
-
-    Gtk.main ();
+    var m = new TrackerZilla.Main (resource);
+    m.run ();
 
     return 0;
 }
