@@ -19,6 +19,7 @@
 
 using Gtk;
 using Gdk;
+using Gdk;
 
 internal enum TrackerZilla.SearchDirection {
     FORWARD,

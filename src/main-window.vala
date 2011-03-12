@@ -18,6 +18,7 @@
 //
 
 using Gtk;
+using Gdk;
 using Tracker;
 using WebKit;
 
@@ -26,6 +27,7 @@ class TrackerZilla.Main : Object {
     private Builder builder;
     private SearchBar search_bar;
     private DataSource data_source;
+    private unowned Gtk.Window window;
 
     public Main (string initial_uri) {
         this.data_source = new DataSource ();
@@ -47,8 +49,10 @@ class TrackerZilla.Main : Object {
         }
 
         this.search_bar = new SearchBar (this.builder);
-        var window = this.builder.get_object ("tz_main_window") as Window;
-        window.add_accel_group (search_bar.get_accelerators ());
+        window = this.builder.get_object ("tz_main_window") as Gtk.Window;
+
+        this.setup_key_bindings ();
+
         // init UI
         this.view = new WebView ();
         this.view.show ();
@@ -71,8 +75,7 @@ class TrackerZilla.Main : Object {
     }
 
     public void run () {
-        var window = this.builder.get_object ("tz_main_window") as Window;
-        window.show ();
+        this.window.show ();
 
         Gtk.main ();
     }
@@ -129,10 +132,35 @@ class TrackerZilla.Main : Object {
         }
     }
 
+    private void setup_key_bindings () {
+        this.window.add_accel_group (this.search_bar.get_accelerators ());
+        var accelerators = new AccelGroup ();
+        accelerators.connect (Key.Back,
+                              0,
+                              AccelFlags.VISIBLE,
+                              this.on_back_key_pressed);
+
+        accelerators.connect (Key.Left,
+                              ModifierType.MOD1_MASK,
+                              AccelFlags.VISIBLE,
+                              this.on_back_key_pressed);
+
+        accelerators.connect (Key.Forward,
+                              0,
+                              AccelFlags.VISIBLE,
+                              this.on_forward_key_pressed);
+
+        accelerators.connect (Key.Right,
+                              ModifierType.MOD1_MASK,
+                              AccelFlags.VISIBLE,
+                              this.on_forward_key_pressed);
+
+        this.window.add_accel_group (accelerators);
+    }
+
     private void show_error (string primary, Error error) {
-        var window = this.builder.get_object ("tz_main_window") as Window;
         var dialog = new MessageDialog.with_markup
-                                    (window,
+                                    (this.window,
                                      0,
                                      MessageType.ERROR,
                                      ButtonsType.CLOSE,
@@ -142,6 +170,29 @@ class TrackerZilla.Main : Object {
         dialog.run ();
         dialog.destroy ();
     }
+
+    private bool on_back_key_pressed (AccelGroup   accel_group,
+                                      Object       acceleratable,
+                                      uint         keyval,
+                                      Gdk.ModifierType type) {
+        if (this.view.can_go_back ()) {
+            this.view.go_back ();
+        }
+
+        return true;
+    }
+
+    private bool on_forward_key_pressed (AccelGroup   accel_group,
+                                         Object       acceleratable,
+                                         uint         keyval,
+                                         Gdk.ModifierType type) {
+        if (this.view.can_go_forward ()) {
+            this.view.go_forward ();
+        }
+
+        return true;
+    }
+
 }
 
 
