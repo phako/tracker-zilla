@@ -1,0 +1,10 @@
+Version 0.2:
+  - In-site search
+
+Version 0.1.1:
+  - Enable usage with Gtk+-2.0
+
+Version 0.1:
+  - Initial version.
+  - Easy browsing of tracker resources
+  - Backward/Forward navigation
