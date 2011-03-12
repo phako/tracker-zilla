@@ -22,8 +22,8 @@ src_trackerzilla_SOURCES= \
 src_trackerzilla_VALAFLAGS=\
 	--vapidir $(abs_top_srcdir)/vapi \
 	--pkg config \
-	--pkg $(GTK_PACKAGE) \
-	--pkg $(WEBKIT_PACKAGE) \
+	--pkg gtk+-3.0 \
+	--pkg webkitgtk-3.0 \
 	--pkg gee-1.0 \
 	--pkg tracker-sparql-0.10
 
