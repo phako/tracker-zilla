@@ -38,6 +38,7 @@ class TrackerZilla.Main : Object {
         this.builder.add_from_file (Config.UI_DIR + "/tracker-zilla.ui");
         this.search_bar = new SearchBar (this.builder);
         var window = this.builder.get_object ("tz_main_window") as Window;
+        window.add_accel_group (search_bar.get_accelerators ());
         // init UI
         this.view = new WebView ();
         this.view.show ();

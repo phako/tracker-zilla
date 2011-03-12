@@ -18,6 +18,7 @@
 //
 
 using Gtk;
+using Gdk;
 
 internal enum TrackerZilla.SearchDirection {
     FORWARD,
@@ -31,21 +32,25 @@ internal class TrackerZilla.SearchBar : Object {
     private const string BACK = BAR + "_back_button";
     private const string FORWARD = BAR + "_forward_button";
     private const string CLOSE = BAR + "_close_button";
+    private unowned Entry entry;
+    private AccelGroup accelerators;
 
     public signal void find (string text, SearchDirection direction);
 
     public SearchBar (Builder builder) {
         this.builder = builder;
+        this.setup_key_bindings ();
 
-        var entry = this.builder.get_object (ENTRY) as Entry;
-        entry.icon_release.connect (this.search_forward);
+        this.entry = this.builder.get_object (ENTRY) as Entry;
+        this.entry.icon_release.connect (this.search_forward);
+        this.entry.activate.connect (this.search_forward);
 
         var forward = this.builder.get_object (FORWARD) as Button;
         forward.clicked.connect (this.search_forward);
 
         var back = this.builder.get_object (BACK) as Button;
         back.clicked.connect (() => {
-            this.find (entry.get_text (), SearchDirection.BACKWARD);
+            this.find (this.entry.get_text (), SearchDirection.BACKWARD);
         });
 
         var close = this.builder.get_object (CLOSE) as Button;
@@ -54,14 +59,43 @@ internal class TrackerZilla.SearchBar : Object {
         });
     }
 
+    private void setup_key_bindings () {
+        this.accelerators = new AccelGroup ();
+        this.accelerators.connect ('/', 0, AccelFlags.VISIBLE, () => {
+            this.show ();
+
+            return true;
+        });
+
+        this.accelerators.connect ('f', ModifierType.CONTROL_MASK,
+                AccelFlags.VISIBLE, () => {
+            this.show ();
+
+            return true;
+        });
+
+        this.accelerators.connect (Key.Escape, 0, AccelFlags.VISIBLE, () => {
+            this.show (false);
+
+            return true;
+        });
+    }
+
+
     public void show (bool show = true) {
         var box = this.builder.get_object (BAR) as Box;
 
         box.set_visible (show);
+        if (show) {
+            this.entry.grab_focus ();
+        }
+    }
+
+    public AccelGroup get_accelerators () {
+        return this.accelerators;
     }
 
     private void search_forward () {
-        var entry = this.builder.get_object (ENTRY) as Entry;
-        this.find (entry.get_text (), SearchDirection.FORWARD);
+        this.find (this.entry.get_text (), SearchDirection.FORWARD);
     }
 }
