@@ -24,9 +24,9 @@ src_trackerzilla_VALAFLAGS=\
 	--vapidir $(abs_top_srcdir)/vapi \
 	--pkg config \
 	--pkg gio-2.0 \
-	--pkg gtk+-3.0 \
+	--pkg $(GTK_PACKAGE) \
+	--pkg $(WEBKIT_PACKAGE) \
 	--pkg posix \
-	--pkg webkitgtk-3.0 \
 	--pkg gee-1.0 \
 	--pkg tracker-sparql-0.10
 
