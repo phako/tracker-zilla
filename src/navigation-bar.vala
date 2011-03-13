@@ -23,18 +23,19 @@ class TrackerZilla.NavigationBar : GLib.Object {
     private const int DIRECTION_BACK = -1;
     private const int DIRECTION_FORWARD = 1;
     private const string BAR = "tz_navigation_bar";
-    private const string QUIT = BAR + "_quit_button";
     private const string BACK = BAR + "_back_button";
     private const string FORWARD = BAR + "_forward_button";
     private const string ENTRY = BAR + "_property_entry";
+    private Spinner spinner;
 
     public signal void open (string uri);
     public signal void navigate (int direction);
 
     public NavigationBar (Builder builder) {
-        var quit_button = builder.get_object (QUIT) as Button;
-        quit_button.clicked.connect ( () => { Gtk.main_quit (); } );
-
+        var box = builder.get_object (BAR) as Box;
+        spinner = new Spinner ();
+        spinner.show ();
+        box.pack_end (spinner, false, false, 0);
         var back_button = builder.get_object (BACK) as Button;
         back_button.clicked.connect ( () => {
             this.navigate (DIRECTION_BACK);
@@ -49,5 +50,13 @@ class TrackerZilla.NavigationBar : GLib.Object {
         entry.activate.connect ( () => {
             this.open (entry.get_text ());
         });
+    }
+
+    public void set_busy (bool busy = true) {
+        if (busy) {
+            this.spinner.start ();
+        } else {
+            this.spinner.stop ();
+        }
     }
 }

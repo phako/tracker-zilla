@@ -123,9 +123,10 @@ class TrackerZilla.Main : GLib.Object {
                              bool history = true)
                              throws Error {
         try {
+            this.navigation_bar.set_busy ();
             yield this.data_source.query (uri);
             var content = "<h2>%s</h2>%s".printf (uri,
-                                                  this.data_source.render ());
+                                                  yield this.data_source.render ());
             this.view.load_string (content, "text/html", "UTF-8", "");
 
             if (history) {
@@ -138,6 +139,8 @@ class TrackerZilla.Main : GLib.Object {
             this.show_error ("Failed to query information from tracker",
                              error);
             Gtk.main_quit ();
+        } finally {
+            this.navigation_bar.set_busy (false);
         }
     }
 

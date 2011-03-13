@@ -28,7 +28,7 @@ internal class TrackerZilla.LinkedInfo : AbstractInfo {
         base (connection, properties, shortener);
     }
 
-    public override string render () {
+    public override async string render () {
         if (data.size == 0) {
             return "";
         }
@@ -36,11 +36,25 @@ internal class TrackerZilla.LinkedInfo : AbstractInfo {
         string html = "<h3>Linked resources:</h3>\n" +
                       "<div>\n" +
                       "<table>\n";
-        foreach (var key in this.data.get_keys ()) {
-            foreach (var value in this.data.get (key)) {
-                html += "<tr><td>%s</td><td>%s</td></tr>\n".printf (key, value);
+
+        unowned Thread<void*> t = Thread.create<void *> ( () => {
+            foreach (var key in this.data.get_keys ()) {
+                foreach (var value in this.data.get (key)) {
+                    html += "<tr><td>%s</td><td>%s</td></tr>\n".printf (key, value);
+                }
             }
-        }
+            Idle.add ( () => {
+                render.callback ();
+
+                return false;
+            });
+
+            return null;
+        }, true);
+
+        yield;
+        t.join ();
+
         html += "</table>\n</div>";
 
         return html;

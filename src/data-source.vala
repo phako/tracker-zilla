@@ -64,8 +64,8 @@ internal class TrackerZilla.DataSource : Object, AsyncInitable {
         yield this.linking.query (uri);
     }
 
-    public string render () {
-        return "%s%s".printf (linked.render (),
-                              linking.render ());
+    public async string render () {
+        return "%s%s".printf (yield linked.render (),
+                              yield linking.render ());
     }
 }

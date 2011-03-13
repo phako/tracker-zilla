@@ -1,5 +1,6 @@
 Version 0.2:
   - In-site search
+  - Keyboard navigation
 
 Version 0.1.1:
   - Enable usage with Gtk+-2.0

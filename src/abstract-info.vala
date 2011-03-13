@@ -60,7 +60,7 @@ internal abstract class TrackerZilla.AbstractInfo : Object {
         }
     }
 
-    public abstract string render ();
+    public abstract async string render ();
 
     public abstract unowned string template ();
 }
