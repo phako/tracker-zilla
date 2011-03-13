@@ -22,7 +22,7 @@ using Gdk;
 using Tracker;
 using WebKit;
 
-class TrackerZilla.Main : Object {
+class TrackerZilla.Main : GLib.Object {
     private WebView view;
     private Builder builder;
     private SearchBar search_bar;
@@ -172,7 +172,7 @@ class TrackerZilla.Main : Object {
     }
 
     private bool on_back_key_pressed (AccelGroup   accel_group,
-                                      Object       acceleratable,
+                                      GLib.Object  acceleratable,
                                       uint         keyval,
                                       Gdk.ModifierType type) {
         if (this.view.can_go_back ()) {
@@ -183,7 +183,7 @@ class TrackerZilla.Main : Object {
     }
 
     private bool on_forward_key_pressed (AccelGroup   accel_group,
-                                         Object       acceleratable,
+                                         GLib.Object  acceleratable,
                                          uint         keyval,
                                          Gdk.ModifierType type) {
         if (this.view.can_go_forward ()) {

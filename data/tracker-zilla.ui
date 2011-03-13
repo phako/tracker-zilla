@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkWindow" id="tz_main_window">
     <property name="can_focus">False</property>
     <property name="default_width">800</property>
     <property name="default_height">600</property>
     <child>
-      <object class="GtkBox" id="box1">
+      <object class="GtkVBox" id="box1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
         <child>
           <object class="GtkScrolledWindow" id="tz_main_scrolled">
             <property name="visible">True</property>
@@ -26,7 +24,7 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="tz_search_bar">
+          <object class="GtkHBox" id="tz_search_bar">
             <property name="can_focus">False</property>
             <property name="spacing">6</property>
             <child>

@@ -26,7 +26,7 @@ internal enum TrackerZilla.SearchDirection {
     BACKWARD
 }
 
-internal class TrackerZilla.SearchBar : Object {
+internal class TrackerZilla.SearchBar : GLib.Object {
     private unowned Builder builder;
     private const string BAR = "tz_search_bar";
     private const string ENTRY = BAR + "_entry";
