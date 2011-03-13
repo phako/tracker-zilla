@@ -26,6 +26,7 @@ class TrackerZilla.Main : GLib.Object {
     private WebView view;
     private Builder builder;
     private SearchBar search_bar;
+    private NavigationBar navigation_bar;
     private DataSource data_source;
     private unowned Gtk.Window window;
 
@@ -49,6 +50,7 @@ class TrackerZilla.Main : GLib.Object {
         }
 
         this.search_bar = new SearchBar (this.builder);
+        this.navigation_bar = new NavigationBar (this.builder);
         window = this.builder.get_object ("tz_main_window") as Gtk.Window;
 
         this.setup_key_bindings ();
@@ -71,6 +73,13 @@ class TrackerZilla.Main : GLib.Object {
 
         this.view.navigation_policy_decision_requested.connect
                                         (this.on_link_clicked);
+
+        this.navigation_bar.open.connect ( (uri) => { this.query (uri); } );
+        this.navigation_bar.navigate.connect ( (direction) => {
+            if (this.view.can_go_back_or_forward (direction)) {
+                this.view.go_back_or_forward (direction);
+            }
+        });
         this.init (initial_uri);
     }
 

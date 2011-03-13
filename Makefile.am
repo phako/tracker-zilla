@@ -17,6 +17,7 @@ src_trackerzilla_SOURCES= \
 	src/linking-info.vala \
 	src/main.vala \
 	src/main-window.vala \
+	src/navigation-bar.vala \
 	src/prefix-registry.vala \
 	src/search-bar.vala
 
