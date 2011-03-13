@@ -60,7 +60,47 @@ internal abstract class TrackerZilla.AbstractInfo : Object {
         }
     }
 
-    public abstract async string render ();
+    public abstract unowned string title ();
+
+    public abstract bool is_swapped ();
 
     public abstract unowned string template ();
+
+    public async string render () {
+        if (data.size == 0) {
+            return "";
+        }
+
+        StringBuilder html = new StringBuilder ();
+        html.append ("<h3>");
+        html.append (this.title ());
+        html.append ("</h3>\n<div>\n<table>\n");
+
+        unowned Thread<void *> t = Thread.create<void *> ( () => {
+            var swapped = this.is_swapped ();
+            foreach (var key in this.data.get_keys ()) {
+                foreach (var value in this.data.get (key)) {
+                    html.append ("<tr><td>");
+                    html.append (swapped ? value : key);
+                    html.append ("</td><td>");
+                    html.append (swapped ? key : value);
+                    html.append ("</td></tr>\n");
+                }
+            }
+
+            Idle.add ( () => {
+                render.callback ();
+
+                return false;
+            });
+        }, true);
+
+        yield;
+
+        t.join ();
+        html.append ("</table>\n</div>");
+
+        return html.str;
+
+    }
 }
