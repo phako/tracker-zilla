@@ -1,13 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
+  <requires lib="gtk+" version="2.16"/>
+  <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkWindow" id="tz_main_window">
-    <property name="can_focus">False</property>
+    <property name="border_width">6</property>
     <property name="default_width">800</property>
     <property name="default_height">600</property>
     <child>
       <object class="GtkVBox" id="box1">
         <property name="visible">True</property>
-        <property name="can_focus">False</property>
+        <property name="spacing">3</property>
+        <child>
+          <object class="GtkHBox" id="tz_navigation_bar">
+            <property name="visible">True</property>
+            <property name="spacing">6</property>
+            <child>
+              <object class="GtkButton" id="tz_navigation_bar_back_button">
+                <property name="label">gtk-go-back</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="tz_navigation_bar_forward_button">
+                <property name="label">gtk-go-forward</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="tz_navigation_bar_property_entry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">●</property>
+              </object>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="tz_navigation_bar_quit_button">
+                <property name="label">gtk-quit</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="pack_type">end</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
         <child>
           <object class="GtkScrolledWindow" id="tz_main_scrolled">
             <property name="visible">True</property>
@@ -18,18 +80,12 @@
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
           <object class="GtkHBox" id="tz_search_bar">
-            <property name="can_focus">False</property>
             <property name="spacing">6</property>
-            <child>
-              <placeholder/>
-            </child>
             <child>
               <object class="GtkEntry" id="tz_search_bar_entry">
                 <property name="visible">True</property>
@@ -39,19 +95,17 @@
                 <property name="primary_icon_stock">gtk-find</property>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
                 <property name="position">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton" id="tz_search_bar_back_button">
-                <property name="label">gtk-go-back</property>
+                <property name="label" translatable="yes">_Previous</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
-                <property name="use_stock">True</property>
+                <property name="image">image1</property>
+                <property name="use_underline">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -61,12 +115,12 @@
             </child>
             <child>
               <object class="GtkButton" id="tz_search_bar_forward_button">
-                <property name="label">gtk-go-forward</property>
+                <property name="label">_Next</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
-                <property name="use_stock">True</property>
+                <property name="image">image2</property>
+                <property name="use_underline">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -80,7 +134,6 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -92,12 +145,19 @@
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="fill">True</property>
             <property name="padding">3</property>
-            <property name="position">1</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="stock">gtk-go-back</property>
+  </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="stock">gtk-go-forward</property>
   </object>
 </interface>
