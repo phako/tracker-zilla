@@ -27,6 +27,7 @@ class TrackerZilla.NavigationBar : GLib.Object {
     private const string FORWARD = BAR + "_forward_button";
     private const string ENTRY = BAR + "_property_entry";
     private Spinner spinner;
+    private unowned Entry entry;
 
     public signal void open (string uri);
     public signal void navigate (int direction);
@@ -46,7 +47,7 @@ class TrackerZilla.NavigationBar : GLib.Object {
             this.navigate (DIRECTION_FORWARD);
         });
 
-        var entry = builder.get_object (ENTRY) as Entry;
+        this.entry = builder.get_object (ENTRY) as Entry;
         entry.activate.connect ( () => {
             this.open (entry.get_text ());
         });
@@ -58,5 +59,9 @@ class TrackerZilla.NavigationBar : GLib.Object {
         } else {
             this.spinner.stop ();
         }
+    }
+
+    public void set_uri (string uri) {
+        this.entry.set_text (uri);
     }
 }

@@ -124,6 +124,7 @@ class TrackerZilla.Main : GLib.Object {
                              throws Error {
         try {
             this.navigation_bar.set_busy ();
+            this.navigation_bar.set_uri (uri);
             yield this.data_source.query (uri);
             var content = "<h2>%s</h2>%s".printf (uri,
                                                   yield this.data_source.render ());
