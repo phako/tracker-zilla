@@ -89,12 +89,12 @@
             </child>
             <child>
               <object class="GtkButton" id="tz_search_bar_back_button">
-                <property name="label" translatable="yes">_Previous</property>
+                <property name="label">gtk-go-up</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="image">image1</property>
                 <property name="use_underline">True</property>
+                <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -104,12 +104,12 @@
             </child>
             <child>
               <object class="GtkButton" id="tz_search_bar_forward_button">
-                <property name="label">_Next</property>
+                <property name="label">gtk-go-down</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="image">image2</property>
                 <property name="use_underline">True</property>
+                <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -140,13 +140,5 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkImage" id="image1">
-    <property name="visible">True</property>
-    <property name="stock">gtk-go-back</property>
-  </object>
-  <object class="GtkImage" id="image2">
-    <property name="visible">True</property>
-    <property name="stock">gtk-go-forward</property>
   </object>
 </interface>
