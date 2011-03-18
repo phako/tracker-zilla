@@ -41,8 +41,9 @@ internal abstract class TrackerZilla.AbstractInfo : Object {
     }
 
     public async void query (string urn) throws Error {
+        var resolved_iri = this.shortener.reverse_lookup (urn);
         this.data.clear ();
-        var query = this.template ().printf (urn);
+        var query = this.template ().printf (resolved_iri);
         var cursor = yield this.connection.query_async (query);
         while (yield cursor.next_async ()) {
             unowned string predicate = cursor.get_string (0);

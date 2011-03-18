@@ -36,6 +36,14 @@ internal class TrackerZilla.ReplacerEntry : Object {
 
         return null;
     }
+
+    public string? reverse_lookup (string prefixed_name) {
+        if (prefixed_name.has_prefix (this.alias)) {
+            return this.prefix + prefixed_name.substring (this.alias.length);
+        }
+
+        return null;
+    }
 }
 
 internal class TrackerZilla.KnownPrefixReplacer : Object {
@@ -66,6 +74,17 @@ internal class TrackerZilla.KnownPrefixReplacer : Object {
         }
 
         return uri;
+    }
+
+    public string reverse_lookup (string prefixed_name) {
+        foreach (var entry in this.entries) {
+            var expanded = entry.reverse_lookup (prefixed_name);
+            if (expanded != null) {
+                return expanded;
+            }
+        }
+
+        return prefixed_name;
     }
 }
 
