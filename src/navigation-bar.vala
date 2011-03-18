@@ -18,6 +18,7 @@
 //
 
 using Gtk;
+using Gdk;
 
 class TrackerZilla.NavigationBar : GLib.Object {
     private const int DIRECTION_BACK = -1;
@@ -28,6 +29,7 @@ class TrackerZilla.NavigationBar : GLib.Object {
     private const string ENTRY = BAR + "_property_entry";
     private Spinner spinner;
     private unowned Entry entry;
+    private AccelGroup accelerators;
 
     public signal void open (string uri);
     public signal void navigate (int direction);
@@ -48,8 +50,18 @@ class TrackerZilla.NavigationBar : GLib.Object {
         });
 
         this.entry = builder.get_object (ENTRY) as Entry;
-        entry.activate.connect ( () => {
+        this.entry.activate.connect ( () => {
             this.open (entry.get_text ());
+        });
+
+        this.accelerators = new AccelGroup ();
+        this.accelerators.connect ('l',
+                                   ModifierType.CONTROL_MASK,
+                                   AccelFlags.VISIBLE,
+                                   () => {
+            this.entry.grab_focus ();
+
+            return true;
         });
     }
 
@@ -63,5 +75,9 @@ class TrackerZilla.NavigationBar : GLib.Object {
 
     public void set_uri (string uri) {
         this.entry.set_text (uri);
+    }
+
+    public AccelGroup get_accelerators () {
+        return this.accelerators;
     }
 }

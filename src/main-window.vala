@@ -147,6 +147,7 @@ class TrackerZilla.Main : GLib.Object {
 
     private void setup_key_bindings () {
         this.window.add_accel_group (this.search_bar.get_accelerators ());
+        this.window.add_accel_group (this.navigation_bar.get_accelerators ());
         var accelerators = new AccelGroup ();
         accelerators.connect (Key.Back,
                               0,
