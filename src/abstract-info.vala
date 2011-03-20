@@ -21,19 +21,19 @@ using Tracker;
 using Gee;
 
 internal abstract class TrackerZilla.AbstractInfo : Object {
-    private const string LINK_TEMPLATE = "<a href=\"%s\">%s</a>";
+    protected const string LINK_TEMPLATE = "<a href=\"%s\">%s</a>";
     protected Sparql.Connection connection;
     protected TreeMultiMap<string,string> data;
-    private   Gee.Set<string> properties;
-    private   KnownPrefixReplacer shortener;
+    protected KnownPrefixReplacer shortener;
+    protected Map<string, bool> properties;
 
     public static string generate_uri (string uri) {
         return "tracker://" + Uri.escape_string (uri, "", true);
     }
 
-    public AbstractInfo (Sparql.Connection   connection,
-                         Gee.Set<string>     properties,
-                         KnownPrefixReplacer shortener) {
+    public AbstractInfo (Sparql.Connection     connection,
+                         Gee.Map<string, bool> properties,
+                         KnownPrefixReplacer   shortener) {
         this.connection = connection;
         this.properties = properties;
         this.data = new TreeMultiMap<string, string> ();
@@ -47,17 +47,22 @@ internal abstract class TrackerZilla.AbstractInfo : Object {
         var cursor = yield this.connection.query_async (query);
         while (yield cursor.next_async ()) {
             unowned string predicate = cursor.get_string (0);
-            var shortened_predicate = this.shortener.reduce (predicate);
             unowned string object = cursor.get_string (1);
-            var shortened_object = this.shortener.reduce (object);
-            if (cursor.get_value_type (1) == Sparql.ValueType.URI ||
-                !this.properties.contains (predicate)) {
-                var link = LINK_TEMPLATE.printf (generate_uri (object),
-                                                 shortened_object);
-                data[shortened_predicate] = link;
-            } else {
-                data[shortened_predicate] = object;
-            }
+            this.generate_links (urn, predicate, object);
+        }
+    }
+
+    public virtual void generate_links (string urn,
+                                        string predicate,
+                                        string object) {
+        var shortened_predicate = this.shortener.reduce (predicate);
+        var shortened_object = this.shortener.reduce (object);
+        if (!this.properties.has (predicate, true)) {
+            var link = LINK_TEMPLATE.printf (generate_uri (object),
+                    shortened_object);
+            data[shortened_predicate] = link;
+        } else {
+            data[shortened_predicate] = object;
         }
     }
 

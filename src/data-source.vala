@@ -24,14 +24,15 @@ internal class TrackerZilla.DataSource : Object, AsyncInitable {
                  "SELECT ?p ?r WHERE { ?p a rdf:Property. ?p rdfs:range ?r }";
     private AbstractInfo linked;
     private AbstractInfo linking;
+    private AbstractInfo property;
     private Sparql.Connection connection;
-    private Gee.HashSet<string> simple_properties;
+    private Gee.HashMap<string, bool> properties;
     private KnownPrefixReplacer shortener;
 
     public signal void data_ready ();
 
     public DataSource () {
-        this.simple_properties = new Gee.HashSet<string> ();
+        this.properties = new Gee.HashMap<string, bool> ();
     }
 
     public async bool init_async (int          io_priority = GLib.Priority.DEFAULT,
@@ -39,20 +40,23 @@ internal class TrackerZilla.DataSource : Object, AsyncInitable {
                                   throws Error {
         this.connection = yield Sparql.Connection.get_async ();
         this.shortener = new KnownPrefixReplacer (this.connection);
-        this.linked = new LinkedInfo (this.connection,
-                                      this.simple_properties,
-                                      this.shortener);
-        this.linking = new LinkingInfo (this.connection,
-                                        this.simple_properties,
-                                        this.shortener);
 
         var cursor = yield this.connection.query_async (TYPE_QUERY);
         var simple_type = new Regex ("^http://www.w3.org/2001/XMLSchema#");
         while (yield cursor.next_async ()) {
-            if (simple_type.match (cursor.get_string (1))) {
-                simple_properties.add (cursor.get_string (0));
-            }
+            properties.set (cursor.get_string (0),
+                            simple_type.match (cursor.get_string (1)));
         }
+
+        this.linked = new LinkedInfo (this.connection,
+                                      this.properties,
+                                      this.shortener);
+        this.linking = new LinkingInfo (this.connection,
+                                        this.properties,
+                                        this.shortener);
+        this.property = new PropertyInfo (this.connection,
+                                          this.properties,
+                                          this.shortener);
 
         yield this.shortener.init ();
 
@@ -62,10 +66,16 @@ internal class TrackerZilla.DataSource : Object, AsyncInitable {
     public async void query (string uri) throws Error {
         yield this.linked.query (uri);
         yield this.linking.query (uri);
+        try {
+            yield this.property.query (uri);
+        } catch (Error error) {
+            // ignore
+        }
     }
 
     public async string render () {
-        return "%s%s".printf (yield linked.render (),
-                              yield linking.render ());
+        return "%s%s%s".printf (yield linked.render (),
+                                yield linking.render (),
+                                yield property.render ());
     }
 }

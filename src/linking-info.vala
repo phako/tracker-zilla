@@ -22,9 +22,9 @@ using Tracker;
 internal class TrackerZilla.LinkingInfo : AbstractInfo {
     private const string linking_template = "SELECT ?b ?a WHERE { ?a ?b <%s> . }";
 
-    public LinkingInfo (Sparql.Connection   connection,
-                        Gee.Set<string>     properties,
-                        KnownPrefixReplacer shortener) {
+    public LinkingInfo (Sparql.Connection     connection,
+                        Gee.Map<string, bool> properties,
+                        KnownPrefixReplacer   shortener) {
         base (connection, properties, shortener);
     }
 

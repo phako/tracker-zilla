@@ -19,17 +19,17 @@
 
 using Tracker;
 
-internal class TrackerZilla.LinkedInfo : AbstractInfo {
-    private const string linked_template = "SELECT ?a ?b WHERE { <%s> ?a ?b . }";
+internal class TrackerZilla.PropertyInfo : AbstractInfo {
+    private const string linked_template = "SELECT ?a ?b WHERE { ?a <%s> ?b . }";
 
-    public LinkedInfo (Sparql.Connection     connection,
-                       Gee.Map<string, bool> properties,
-                       KnownPrefixReplacer   shortener) {
+    public PropertyInfo (Sparql.Connection     connection,
+                         Gee.Map<string, bool> properties,
+                         KnownPrefixReplacer   shortener) {
         base (connection, properties, shortener);
     }
 
     public override unowned string title () {
-        return "Linked resources";
+        return "Defined properties";
     }
 
     public override bool is_swapped () {
@@ -38,5 +38,19 @@ internal class TrackerZilla.LinkedInfo : AbstractInfo {
 
     public override unowned string template () {
         return linked_template;
+    }
+
+    public override void generate_links (string predicate,
+                                        string subject,
+                                        string object) {
+        var link_subject = LINK_TEMPLATE.printf (
+                AbstractInfo.generate_uri (subject),
+                this.shortener.reduce (subject));
+        data[link_subject] =
+            this.properties.has (predicate, true) ?
+                LINK_TEMPLATE.printf (
+                    AbstractInfo.generate_uri (object),
+                    this.shortener.reduce (object))
+                : this.shortener.reduce (object);
     }
 }
