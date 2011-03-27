@@ -60,15 +60,15 @@ class TrackerZilla.Main : GLib.Object {
         this.view.show ();
         var scrolled = this.builder.get_object ("tz_main_scrolled")
                                         as ScrolledWindow;
-        scrolled.add (view);
+        scrolled.add (this.view);
 
         window.destroy.connect ( () => { Gtk.main_quit (); } );
 
         this.search_bar.find.connect ( (text, direction) => {
-            view.search_text (text,
-                              false,
-                              direction == SearchDirection.FORWARD,
-                              true);
+            this.view.search_text (text,
+                                   false,
+                                   direction == SearchDirection.FORWARD,
+                                   true);
         });
 
         this.view.navigation_policy_decision_requested.connect
