@@ -30,14 +30,13 @@ GEE_REQUIRED=0.6
 AC_ARG_WITH([gtk],
             AS_HELP_STRING([--with-gtk],[The Gtk+ version to build with (2 or 3, default is 3)]),
             with_gtkver="$withval", with_gtkver=3)
-case "${with_gtkver}" in
-    2) GTK_PACKAGE=gtk+-2.0
-       GTK_REQUIRED=2.23.4
-       WEBKIT_PACKAGE=webkit-1.0
-       WEBKITGTK_REQUIRED=1.2.5
-       ;;
-    *) ;;
-esac
+
+AS_CASE([$with_gtkver],[2],[
+         GTK_PACKAGE=gtk+-2.0
+         GTK_REQUIRED=2.23.4
+         WEBKIT_PACKAGE=webkit-1.0
+         WEBKITGTK_REQUIRED=1.2.5])
+
 AC_SUBST([WEBKIT_PACKAGE])
 AC_SUBST([GTK_PACKAGE])
 
