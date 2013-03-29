@@ -99,6 +99,8 @@ internal abstract class TrackerZilla.AbstractInfo : Object {
 
                 return false;
             });
+
+            return null;
         }, true);
 
         yield;

@@ -20,25 +20,10 @@ AM_PROG_CC_C_O
 
 dnl Required packages
 VALA_REQUIRED=0.11.6
-GTK_PACKAGE=gtk+-3.0
 GTK_REQUIRED=3.0
-WEBKIT_PACKAGE=webkitgtk-3.0
 WEBKITGTK_REQUIRED=1.3.12
 TRACKER_SPARQL_REQUIRED=0.10
-GEE_REQUIRED=0.6
-
-AC_ARG_WITH([gtk],
-            AS_HELP_STRING([--with-gtk],[The Gtk+ version to build with (2 or 3, default is 3)]),
-            with_gtkver="$withval", with_gtkver=3)
-
-AS_CASE([$with_gtkver],[2],[
-         GTK_PACKAGE=gtk+-2.0
-         GTK_REQUIRED=2.23.4
-         WEBKIT_PACKAGE=webkit-1.0
-         WEBKITGTK_REQUIRED=1.2.5])
-
-AC_SUBST([WEBKIT_PACKAGE])
-AC_SUBST([GTK_PACKAGE])
+GEE_REQUIRED=0.8
 
 AC_ARG_ENABLE([uninstalled],
               AS_HELP_STRING([--enable-uninstalled],
@@ -46,10 +31,20 @@ AC_ARG_ENABLE([uninstalled],
               enable_uninstalled=no)
 AM_CONDITIONAL(UNINSTALLED, [test "x$enable_uninstalled" = "xyes"])
 
-PKG_CHECK_MODULES(LIBGTK, $GTK_PACKAGE >= $GTK_REQUIRED)
-PKG_CHECK_MODULES(WEBKITGTK, $WEBKIT_PACKAGE >= $WEBKITGTK_REQUIRED)
-PKG_CHECK_MODULES(TRACKER_SPARQL, tracker-sparql-0.10 >= $TRACKER_SPARQL_REQUIRED)
-PKG_CHECK_MODULES(GEE, gee-1.0 >= $GEE_REQUIRED)
+PKG_CHECK_MODULES(LIBGTK, gtk+-3.0 >= $GTK_REQUIRED)
+PKG_CHECK_MODULES(WEBKITGTK, webkitgtk-3.0 >= $WEBKITGTK_REQUIRED)
+PKG_CHECK_MODULES(GEE, gee-0.8 >= $GEE_REQUIRED)
+
+# Search available Tracker version
+trackerpkg=""
+m4_foreach([VERSION], [[0.16] [0.15], [0.14], [0.11], [0.12], [0.10]],
+                      [PKG_CHECK_EXISTS([tracker-sparql-VERSION >= 0.10.5],
+                                        [ trackerpkg="tracker-sparql-VERSION" ])
+                      ])
+
+PKG_CHECK_MODULES([TRACKER_SPARQL], [ ${trackerpkg} ])
+TRACKER_SPARQL_PKG=$trackerpkg
+AC_SUBST(TRACKER_SPARQL_PKG)
 
 AC_ARG_ENABLE([vala],
               AS_HELP_STRING([--enable-vala],
@@ -59,7 +54,7 @@ AC_ARG_ENABLE([vala],
 if test "x$enable_vala" = "xyes"
 then
     AM_PROG_VALAC([$VALA_REQUIRED])
-    VALA_CHECK_PACKAGES([$GTK_PACKAGE tracker-sparql-0.10 gee-1.0])
+    dnl VALA_CHECK_PACKAGES([gtk+-3.0 tracker-sparql-0.14 gee-1.0])
 fi
 
 AC_CONFIG_FILES([Makefile])

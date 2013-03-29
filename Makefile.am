@@ -26,11 +26,11 @@ src_trackerzilla_VALAFLAGS=\
 	--vapidir $(abs_top_srcdir)/vapi \
 	--pkg config \
 	--pkg gio-2.0 \
-	--pkg $(GTK_PACKAGE) \
-	--pkg $(WEBKIT_PACKAGE) \
+	--pkg gtk+-3.0 \
+	--pkg webkitgtk-3.0 \
 	--pkg posix \
-	--pkg gee-1.0 \
-	--pkg tracker-sparql-0.10
+	--pkg gee-0.8 \
+	--pkg $(TRACKER_SPARQL_PKG)
 
 src_trackerzilla_CFLAGS=\
 	-DUI_DIR='"$(ui_dir)"' \
@@ -39,7 +39,7 @@ src_trackerzilla_CFLAGS=\
 	$(TRACKER_SPARQL_CFLAGS) \
 	$(GEE_CFLAGS)
 
-src_trackerzilla_LDFLAGS=\
+src_trackerzilla_LDADD=\
 	$(LIBGTK_LIBS) \
 	$(WEBKITGTK_LIBS) \
 	$(TRACKER_SPARQL_LIBS) \
